@@ -8,7 +8,7 @@
 </table>
 
 <form id="entry-form">
-  <h3>Add New Financial Entry</h3>
+  <h3>Add New Fountain Entry</h3>
 
   <label for="Lat">Lat:</label>
   <input type="number" id="Lat" name="Lat" required>
@@ -25,48 +25,65 @@
     <canvas id="linechart"></canvas>
 
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-  const Lats = [], Lons = [];
-    fetch('https://sheetdb.io/api/v1/6mtneh34kqqbb')
-  .then(res => res.json())
-  .then(data => {
-      const table = document.getElementById('table-body');
-      data.forEach(row => {
-          // adjust keys for your sheet columns
-          table.innerHTML += `<tr><td>${row.Lat}</td><td>${row.Lon}</td><td>${row.Name}</td></tr>`;
-    Lats.push(row.Lat);
-  Lons.push(row.Lon);
-    });
-});
 const form = document.getElementById('entry-form');
+const tableBody = document.getElementById('table-body');
+const ctx = document.getElementById('linechart').getContext('2d');
+let chart; // Holds Chart.js instance
+
+async function fetchDataAndUpdateUI() {
+  const response = await fetch('https://sheetdb.io/api/v1/6mtneh34kqqbb');
+  const data = await response.json();
+
+  // Update table
+  tableBody.innerHTML = '';
+  data.forEach(row => {
+    tableBody.innerHTML += `<tr><td>${row.Lat}</td><td>${row.Lon}</td><td>${row.Name}</td></tr>`;
+  });
+
+  // Prepare chart data
+  const lats = data.map(row => row.Lat);
+  const lons = data.map(row => parseFloat(row.Lon));
+
+  if (chart) {
+    chart.data.labels = lats;
+    chart.data.datasets[0].data = lons;
+    chart.update();
+  } else {
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: lats,
+        datasets: [{
+          label: 'Lons',
+          data: lons,
+          borderColor: 'green',
+          fill: false
+        }]
+      }
+    });
+  }
+}
+
 form.onsubmit = async (e) => {
   e.preventDefault();
   const Lat = form.Lat.value;
   const Lon = form.Lon.value;
   const Name = form.Name.value;
+
   await fetch('https://sheetdb.io/api/v1/6mtneh34kqqbb', {
     method: 'POST',
-    body: JSON.stringify([{Lat, Lon, Name}]),
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([{ Lat, Lon, Name }])
   });
+
+  form.reset();  // Clear form inputs
+  fetchDataAndUpdateUI();  // Refresh table and chart
 };
-  </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  
-// Render Chart.js line chart
-new Chart(document.getElementById('linechart').getContext('2d'), {
-  type: 'line',
-  data: {
-    labels: Lats,
-    datasets: [{
-      label: "Lons",
-      data: Lons,
-      borderColor: "green",
-      fill: false
-    }]
-  }
-});
+
+// Initial data load
+fetchDataAndUpdateUI();
   </script>
 
   </body>
