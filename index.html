@@ -7,7 +7,7 @@
       const table = document.getElementById('table-body');
       data.forEach(row => {
           // adjust keys for your sheet columns
-          table.innerHTML += `<tr><td>${row.date}</td><td>${row.value}</td></tr>`;
+          table.innerHTML += `<tr><td>${row.Lat}</td><td>${row.Lon}</td><td>${row.Name}</td></tr>`;
       });
   });
   </script>
@@ -15,7 +15,7 @@
   </head>
   <body>
     <table>
-  <thead><tr><th>Date</th><th>Value</th></tr></thead>
+  <thead><tr><th>Lat</th></th><th>Lon</th><th>Name</th></tr></thead>
   <tbody id="table-body"></tbody>
 </table>
 
