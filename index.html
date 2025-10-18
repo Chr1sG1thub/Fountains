@@ -22,6 +22,9 @@
   <button type="submit">Submit</button>
 </form>
 
+    <canvas id="linechart"></canvas>
+
+
   <script>
     fetch('https://sheetdb.io/api/v1/6mtneh34kqqbb')
   .then(res => res.json())
@@ -45,6 +48,30 @@ form.onsubmit = async (e) => {
   });
 };
   </script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  
+</script>// Setup chart data from fetched rows
+const Lats = [], Lons = [];
+data.forEach(row => {
+  Lats.push(row.Lat);
+  Lons.push(row.Lon);
+  //totals.push(parseFloat(row.value)); // Adjust aggregation if needed
+});
+// Render Chart.js line chart
+new Chart(document.getElementById('linechart').getContext('2d'), {
+  type: 'line',
+  data: {
+    labels: Lats,
+    datasets: [{
+      label: "Lons",
+      data: Lons,
+      borderColor: "green",
+      fill: false
+    }]
+  }
+});
+  </script>
+
   </body>
 </html>
