@@ -44,7 +44,7 @@ async function fetchDataAndUpdateUI() {
 
   // Prepare chart data
   const lats = data.map(row => row.Lat);
-  const lons = data.map(row => parseFloat(row.Lon));
+  const lons = data.map(row => row.Lon);
 
   if (chart) {
     chart.data.labels = lats;
